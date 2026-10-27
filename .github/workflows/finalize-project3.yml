@@ -1,0 +1,86 @@
+name: Finalize Project 3 deliverables
+
+on:
+  push:
+    paths:
+      - ".github/workflows/finalize-project3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt nbformat
+
+      - name: Install PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic
+
+      - name: Recreate notebook from matching Python analysis
+        run: |
+          python _build/script_to_notebook.py philipallen04_pr03_notebook.py philipallen04_pr03_notebook.ipynb
+
+      - name: Execute notebook from start to finish
+        run: |
+          jupyter nbconvert --to notebook --execute philipallen04_pr03_notebook.ipynb \
+            --output philipallen04_pr03_notebook.ipynb \
+            --ExecutePreprocessor.timeout=300
+
+      - name: Export matching Python file
+        run: |
+          jupyter nbconvert --to script philipallen04_pr03_notebook.ipynb \
+            --output philipallen04_pr03_notebook
+
+      - name: Export PDF
+        run: |
+          mkdir -p _pdf
+          jupyter nbconvert --to latex philipallen04_pr03_notebook.ipynb \
+            --output notebook.tex --output-dir _pdf
+          cd _pdf
+          xelatex -interaction=nonstopmode notebook.tex
+          xelatex -interaction=nonstopmode notebook.tex
+          cp notebook.pdf ../philipallen04_pr03_notebook.pdf
+
+      - name: Verify required deliverables
+        run: |
+          test -f philipallen04_pr03_notebook.ipynb
+          test -f philipallen04_pr03_notebook.pdf
+          test -f philipallen04_pr03_notebook.py
+          test -f philipallen04_pr03_grouped.csv
+          test -f philipallen04_pr03_laptime_metrics.csv
+          test -f philipallen04_pr03_laptime_predictions.csv
+          test -f philipallen04_pr03_laptime_validation.png
+          test -f philipallen04_pr03_laptime_surfaces.png
+          test -f ims_setup_project02.csv
+          test -f simulated_laptime_data.csv
+
+      - name: Commit generated final deliverables
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add philipallen04_pr03_notebook.ipynb
+          git add philipallen04_pr03_notebook.pdf
+          git add philipallen04_pr03_notebook.py
+          git add philipallen04_pr03_grouped.csv
+          git add philipallen04_pr03_laptime_metrics.csv
+          git add philipallen04_pr03_laptime_predictions.csv
+          git add philipallen04_pr03_laptime_validation.png
+          git add philipallen04_pr03_laptime_surfaces.png
+          if ! git diff --cached --quiet; then
+            git commit -m "Complete validation and interpretation"
+            git push
+          fi
