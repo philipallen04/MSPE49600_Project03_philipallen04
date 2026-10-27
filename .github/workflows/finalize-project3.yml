@@ -28,7 +28,7 @@ jobs:
       - name: Install PDF dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-plain-generic
 
       - name: Recreate notebook from matching Python analysis
         run: |
