@@ -599,7 +599,7 @@ plt.show()
 # Tuning dramatically improves the Gaussian RBF relative to the default settings: its LOOCV RMSE drops from roughly 5.51 s to about 0.079 s, and its held-out test RMSE is also far smaller than the default RBF. However, tuning does **not** make the RBF the best model automatically. The quadratic reference has the lowest training-set LOOCV RMSE and also the lowest held-out test RMSE, MAE, and highest test $R^2$ for this split.
 # 
 # The cross-validation ranking and test ranking therefore agree: the quadratic model ranks first, the tuned RBF second, and the default RBF third. The numerical values of test error and minimum LOOCV error are not expected to match exactly because they are based on different held-out observations. LOOCV repeatedly predicts one omitted training setup at a time, while the test metrics use seven configurations that were completely reserved from model and hyperparameter selection. With only 27 setup means, which particular configurations land in each evaluation set can noticeably change the error.
-
+# 
 # # Task V - Response Surfaces and Observation Influence
 # 
 # ## 21. Final all-data tuned RBF surface
@@ -704,7 +704,7 @@ print("Smallest-residual setup omitted in right panel:", smallest_setup_id)
 # The omission panels show that removing the largest-LOOCV-residual setup changes the local response surface more visibly than removing the smallest-residual setup, although the effect is not uniform across the entire domain. A large omitted-point prediction error measures difficulty predicting that observation; it does not imply an equally large change everywhere.
 # 
 # For **Sector 3 prediction**, I recommend the **quadratic model** for this dataset. Its training-set LOOCV RMSE is lower than the tuned RBF's and its independent test RMSE is also substantially lower. Limitations include only 27 unique setups, noise in setup means, a fixed RBF search grid, and possible numerical sensitivity at very small $\lambda$. The all-data RBF surface is descriptive only: after refitting on all configurations there is no independent test set left, and the surface does not verify a physical optimum or the Project 2 top-speed constraint.
-
+# 
 # # Task VI - Neural Networks with the Separate CSV Lap-Time Dataset
 # 
 # This section follows the structure of the **Lecture 16 CSV MLP example**, but uses the Project 3-required 75/25 split, training-only normalization, fixed `(20, 20)` network architecture, `lbfgs` solver, `alpha=0.1`, `max_iter=5000`, and `random_state=1`. No MLP hyperparameter search or additional LOOCV is performed.
@@ -972,7 +972,7 @@ print("Saved:", laptime_surfaces_png)
 # On the 25 held-out observations, the **tanh MLP has the lowest test RMSE**, followed by the quadratic model and then the ReLU MLP. Thus, in this dataset the smoother tanh network also predicts better on the specified test split. That is evidence for this particular split and fixed settings, not a universal claim that tanh or neural networks are always superior.
 # 
 # The network **weights and biases** are learned model parameters. The `(20,20)` architecture, activation choice, `lbfgs` solver, `alpha=0.1`, `max_iter=5000`, and random seed are fixed hyperparameters for this exercise. A single 75/25 split gives only one estimate of generalization, and predictions are less trustworthy in sparsely sampled parts of the fuel/tire-age plane, especially where plotting points extend outside the training normalization range. No model was retuned in response to test-set performance.
-
+# 
 # # Final Reproducibility Check and Summary
 # 
 # The required repository deliverables are generated with relative data paths. Tasks I-V and Task VI remain separate analyses. The RBF hyperparameters are selected without using the IMS test responses, and the lap-time MLPs are trained only on the 75 training observations.
@@ -998,3 +998,4 @@ required_generated = [
     f"{PREFIX}_laptime_validation.png",
     f"{PREFIX}_laptime_surfaces.png",
 ]
+
